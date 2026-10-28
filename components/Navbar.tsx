@@ -186,7 +186,7 @@ export const Navbar = () => {
                     <User className="w-3 h-3" />
                   </div>
                   <span className="hidden sm:inline">
-                    {user.phoneNumber ? user.phoneNumber : "Profile"}
+                    {user.phoneNumber || user.displayName || user.email || "Profile"}
                   </span>
                   <ChevronDown className="w-3.5 h-3.5 text-charcoal-600" />
                 </button>
@@ -194,9 +194,9 @@ export const Navbar = () => {
                 {profileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-2 z-50 animate-in fade-in zoom-in-95">
                     <div className="px-4 py-2 border-b border-cream-200">
-                      <p className="text-xs font-bold text-forest-950 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-forest-700" />
-                        <span>{user.phoneNumber || "Verified Member"}</span>
+                      <p className="text-xs font-bold text-forest-950 flex items-center gap-1.5 truncate">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-forest-700 shrink-0" />
+                        <span className="truncate">{user.phoneNumber || user.displayName || user.email || "Verified Member"}</span>
                       </p>
                       <p className="text-[10px] text-sage-600 mt-0.5">Royal Botanica Member</p>
                     </div>
@@ -325,7 +325,7 @@ export const Navbar = () => {
                 <div className="bg-cream-200/80 p-3 rounded-xl flex items-center justify-between border border-cream-300">
                   <div className="flex items-center gap-2 text-xs font-bold text-forest-950">
                     <User className="w-4 h-4 text-forest-800" />
-                    <span>{user.phoneNumber || "Member"}</span>
+                    <span>{user.phoneNumber || user.displayName || user.email || "Member"}</span>
                   </div>
                   <button
                     onClick={async () => {
