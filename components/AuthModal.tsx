@@ -144,16 +144,22 @@ export const AuthModal: React.FC = () => {
       cleanupRecaptcha();
 
       let friendlyMessage = "Failed to send OTP. Please check your number and try again.";
-      if (error?.code === "auth/invalid-phone-number") {
-        friendlyMessage = "Invalid phone number format. Please check the country code and number.";
+      if (error?.code === "auth/operation-not-allowed") {
+        friendlyMessage = "Phone Authentication Firebase Console mein enable nahi hai. (Authentication > Sign-in method > Phone enable karein).";
+      } else if (error?.code === "auth/invalid-api-key" || error?.code === "auth/api-key-not-valid") {
+        friendlyMessage = "Invalid Firebase API Key. Kripya .env.local file mein sahi Firebase credentials daalein.";
+      } else if (error?.code === "auth/invalid-phone-number") {
+        friendlyMessage = "Invalid phone number format. Kripya 10-digit sahi number enter karein.";
       } else if (error?.code === "auth/too-many-requests") {
-        friendlyMessage = "Too many requests. Please wait a moment before trying again.";
+        friendlyMessage = "Bohat zyada requests ho gayi hain. Kripya thodi der baad try karein ya test number use karein.";
       } else if (error?.code === "auth/quota-exceeded") {
-        friendlyMessage = "Daily SMS quota exceeded. Please contact support or try tomorrow.";
+        friendlyMessage = "Daily SMS quota exceed ho gaya hai. Firebase Console mein test number configure karein.";
+      } else if (error?.code === "auth/captcha-check-failed") {
+        friendlyMessage = "reCAPTCHA verification fail ho gaya. Kripya page refresh karke dobara try karein.";
       } else if (error?.code === "auth/network-request-failed") {
-        friendlyMessage = "Network error. Please check your internet connection.";
+        friendlyMessage = "Network error. Internet connection check karein.";
       } else if (error?.message) {
-        friendlyMessage = error.message;
+        friendlyMessage = `${error.message} (${error.code || "unknown error"})`;
       }
       setErrorMessage(friendlyMessage);
     } finally {
@@ -278,6 +284,19 @@ export const AuthModal: React.FC = () => {
               : `Enter the 6-digit code sent via SMS to ${countryCode} ${phoneNumber}`}
           </p>
         </div>
+
+        {/* Demo Config Notice */}
+        {(!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes("DemoKey")) && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Firebase Credentials Pending</p>
+              <p className="text-[11px] text-amber-700 mt-0.5">
+                Kripya apni Firebase project keys <code className="bg-amber-100 px-1 py-0.5 rounded">.env.local</code> me daalein taaki OTP SMS deliver ho sake.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Error Alert Box */}
         {errorMessage && (
