@@ -11,16 +11,21 @@ import {
   Menu, 
   X, 
   Leaf, 
-  PhoneCall,
-  Sparkles,
-  ShieldCheck
+  PhoneCall, 
+  Sparkles, 
+  ShieldCheck,
+  LogOut,
+  ChevronDown,
+  CheckCircle2
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 export const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   
   const { 
     cartCount, 
@@ -29,8 +34,11 @@ export const Navbar = () => {
     setIsWishlistOpen, 
     setIsAccountOpen, 
     searchQuery, 
-    setSearchQuery 
+    setSearchQuery,
+    showToast
   } = useCart();
+
+  const { user, logout, setIsAuthModalOpen } = useAuth();
 
   const handleNavClick = (id: string) => {
     setMobileMenuOpen(false);
@@ -165,15 +173,59 @@ export const Navbar = () => {
               )}
             </button>
 
-            {/* Account */}
-            <button
-              onClick={() => setIsAccountOpen(true)}
-              className="p-2.5 rounded-full text-charcoal-800 hover:text-forest-900 hover:bg-cream-200 transition-colors"
-              title="My Account"
-              aria-label="My Account"
-            >
-              <User className="w-5 h-5" />
-            </button>
+            {/* Login / Account Profile with Dropdown */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-cream-200/80 hover:bg-cream-300/80 text-forest-950 text-xs font-semibold border border-cream-300 transition-all shadow-sm"
+                  title="My Account"
+                  aria-label="My Account"
+                >
+                  <div className="w-5 h-5 rounded-full bg-forest-900 text-gold-300 flex items-center justify-center">
+                    <User className="w-3 h-3" />
+                  </div>
+                  <span className="hidden sm:inline">
+                    {user.phoneNumber ? user.phoneNumber : "Profile"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-charcoal-600" />
+                </button>
+
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-2 z-50 animate-in fade-in zoom-in-95">
+                    <div className="px-4 py-2 border-b border-cream-200">
+                      <p className="text-xs font-bold text-forest-950 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-forest-700" />
+                        <span>{user.phoneNumber || "Verified Member"}</span>
+                      </p>
+                      <p className="text-[10px] text-sage-600 mt-0.5">Royal Botanica Member</p>
+                    </div>
+
+                    <button
+                      onClick={async () => {
+                        setProfileDropdownOpen(false);
+                        await logout();
+                        showToast("You have been logged out. 🌿");
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-red-600 hover:bg-rose-50 flex items-center gap-2 font-medium transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-forest-950 bg-cream-100 hover:bg-cream-200 border border-cream-300 text-xs font-semibold transition-all shadow-sm"
+                title="Login / Account"
+                aria-label="Login / Account"
+              >
+                <User className="w-4 h-4 text-forest-900" />
+                <span className="hidden sm:inline">Login</span>
+              </button>
+            )}
 
             {/* Shopping Cart Drawer Trigger */}
             <button
@@ -266,6 +318,40 @@ export const Navbar = () => {
               <ShieldCheck className="w-4 h-4 text-gold-400" />
               <span>Admin Dashboard</span>
             </Link>
+
+            {/* Mobile Auth Button */}
+            <div className="pt-2">
+              {user ? (
+                <div className="bg-cream-200/80 p-3 rounded-xl flex items-center justify-between border border-cream-300">
+                  <div className="flex items-center gap-2 text-xs font-bold text-forest-950">
+                    <User className="w-4 h-4 text-forest-800" />
+                    <span>{user.phoneNumber || "Member"}</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await logout();
+                      showToast("You have been logged out. 🌿");
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 flex items-center gap-1 font-semibold"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-forest-900 text-cream-50 font-semibold text-xs shadow-md active:scale-95 transition-transform"
+                >
+                  <User className="w-4 h-4 text-gold-300" />
+                  <span>Login with Mobile OTP</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="pt-3 border-t border-cream-200 flex items-center justify-between text-xs text-charcoal-700">

@@ -3,12 +3,14 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ProductProvider } from "@/context/ProductContext";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WishlistModal } from "@/components/WishlistModal";
 import { AccountModal } from "@/components/AccountModal";
+import { AuthModal } from "@/components/AuthModal";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Toast } from "@/components/Toast";
@@ -50,16 +52,19 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col font-sans bg-cream-50 text-charcoal-900">
         <ProductProvider>
           <CartProvider>
-            <AnnouncementBar />
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <CartDrawer />
-            <WishlistModal />
-            <AccountModal />
-            <CheckoutModal />
-            <WhatsAppButton />
-            <Toast />
+            <AuthProvider>
+              <AnnouncementBar />
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <CartDrawer />
+              <WishlistModal />
+              <AccountModal />
+              <AuthModal />
+              <CheckoutModal />
+              <WhatsAppButton />
+              <Toast />
+            </AuthProvider>
           </CartProvider>
         </ProductProvider>
       </body>
